@@ -42,3 +42,5 @@ python main.py --have_label True
 
 If you want to use GRAS4T in other datasets, please change the `platform`, `dataset_name` and `slice` parameters. Check main.py for overriding default parameters.
 
+The ST datasets supporting the findings of this study are available at https://doi.org/10.5281/zenodo.11179169.
+
