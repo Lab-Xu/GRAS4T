@@ -12,6 +12,7 @@ from data_read_tool import build_her2st_data, build_stereo_seq_data
 import argparse
 
 parser = argparse.ArgumentParser()
+# General settings
 parser.add_argument('--use_gpu', type=str, default='True', help="Whether to use GPU (set 'True' or 'False')")
 parser.add_argument('--platform', type=str, default='10X', help="Platform used for the dataset (e.g., '10X', etc.)")
 parser.add_argument('--dataset_name', type=str, default='DLPFC', help="Name of the dataset to be used (e.g., 'DLPFC', etc.)")
