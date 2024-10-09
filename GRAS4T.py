@@ -363,6 +363,9 @@ def run(args, adata,
         adata.obs[clustering_name_] = adata.obs[clustering_name_].astype('category')
 
     y_pre_post = refine_label(adata, key=clustering_name_, radius=radius)
+    adata.obs['refine_label'] = y_pre_post
+    adata.obs['refine_label'] = adata.obs[clustering_name_].astype('int')
+    adata.obs['refine_label'] = adata.obs[clustering_name_].astype('category')
 
     if have_label:
         # clustering metrics

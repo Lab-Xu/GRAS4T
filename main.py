@@ -12,45 +12,45 @@ from data_read_tool import build_her2st_data, build_stereo_seq_data
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--use_gpu', type=str, default='True', help="use_gpu")
-parser.add_argument('--platform', type=str, default='10X', help="platform")
-parser.add_argument('--dataset_name', type=str, default='DLPFC', help="dataset")
-parser.add_argument('--slice', type=str, default='151507', help="slice")
-parser.add_argument('--have_label', type=str, default='False', help="have_label")
-parser.add_argument('--num_cluster', type=str, default='None', help="num_cluster")
+parser.add_argument('--use_gpu', type=str, default='True', help="Whether to use GPU (set 'True' or 'False')")
+parser.add_argument('--platform', type=str, default='10X', help="Platform used for the dataset (e.g., '10X', etc.)")
+parser.add_argument('--dataset_name', type=str, default='DLPFC', help="Name of the dataset to be used (e.g., 'DLPFC', etc.)")
+parser.add_argument('--slice', type=str, default='151507', help="Slice ID from the dataset")
+parser.add_argument('--have_label', type=str, default='False', help="Whether the dataset has labels (set 'True' or 'False')")
+parser.add_argument('--num_cluster', type=str, default='None', help="Number of clusters for clustering")
 
 # data preprocessing setting
-parser.add_argument('--use_image', type=str, default='True', help="use_image")
-parser.add_argument('--save_path', type=str, default='./Results', help='save_path path')
+parser.add_argument('--use_image', type=str, default='True', help="Whether to use image data during preprocessing (set 'True' or 'False')")
+parser.add_argument('--save_path', type=str, default='./Results', help='Location where tissue images are saved after being tiled')
 parser.add_argument('--cnnType_', type=str, default='ResNet50',
-                    help="cnnType_")
-parser.add_argument('--n_top_genes', type=int, default=3000, help="n_top_genes")
+                    help="Type of CNN model used for processing images (e.g., 'ResNet50', etc.)")
+parser.add_argument('--n_top_genes', type=int, default=3000, help="Number of top genes selected")
 
 # adj construction setting
-parser.add_argument('--k_X_', type=int, default=10, help="k_X_")
-parser.add_argument('--k_C_', type=int, default=10, help="k_C_")
-parser.add_argument('--weight_', type=float, default=0.5)
+parser.add_argument('--k_X_', type=int, default=10, help="Number of nearest neighbors considered for the gene expression matrix")
+parser.add_argument('--k_C_', type=int, default=10, help="Number of nearest neighbors considered for the spatial location ")
+parser.add_argument('--weight_', type=float, default=0.5, help="Weight for adjacency matrix combination")
 
 # data augmentation settings
-parser.add_argument('--aug1', type=str, default='mask', help="aug1")
-parser.add_argument('--aug2', type=str, default='HS_image', help="aug2")
-parser.add_argument('--drop_percent1', type=float, default=0.1)
-parser.add_argument('--drop_percent2', type=float, default=0.1)
-parser.add_argument('--image_k', type=int, default=100, help="image_k")  # 100
+parser.add_argument('--aug1', type=str, default='mask', help="Type of node augmentation applied (e.g., 'mask')")
+parser.add_argument('--aug2', type=str, default='HS_image', help="Type of edge augmentation applied (e.g., 'HS_image', 'edge')")
+parser.add_argument('--drop_percent1', type=float, default=0.1, help="Dropout percentage applied in the node augmentation")
+parser.add_argument('--drop_percent2', type=float, default=0.1, help="Dropout percentage applied in the edge augmentation")
+parser.add_argument('--image_k', type=int, default=100, help="Number of neighbors considered for HS_image augmentations")
 
 # training param setting
-parser.add_argument('--nb_epochs_', type=int, default=500, help="nb_epochs_")
-parser.add_argument('--lr_', type=float, default=0.001)
-parser.add_argument('--patience_', type=int, default=20)
-parser.add_argument('--interval_num', type=int, default=100, help="interval_num")  # 100
-parser.add_argument('--is_select_neighbor', type=str, default='False', help="is_select_neighbor")  # False
-parser.add_argument('--select_neighbor', type=int, default=5, help="select_neighbor")
-parser.add_argument('--weight_lg', type=float, default=1.0)  # 1.0
-parser.add_argument('--weight_lc', type=float, default=1.0)  # 1.0
-parser.add_argument('--weight_recon', type=float, default=1.0)  # 1.0
+parser.add_argument('--nb_epochs_', type=int, default=500, help="number of epochs")
+parser.add_argument('--lr_', type=float, default=0.001, help="Learning rate")
+parser.add_argument('--patience_', type=int, default=20, help="Patience for early stopping during training")
+parser.add_argument('--interval_num', type=int, default=100, help="Number of interval steps to update the self-expression matrix")
+parser.add_argument('--is_select_neighbor', type=str, default='False', help="whether to use post-processing tools")
+parser.add_argument('--select_neighbor', type=int, default=5, help="number of neighbors selected in post-processing")
+parser.add_argument('--weight_lg', type=float, default=1.0, help="Weight for the global loss")
+parser.add_argument('--weight_lc', type=float, default=1.0, help="Weight for the subspace loss")
+parser.add_argument('--weight_recon', type=float, default=1.0, help="Weight for the reconstruction loss")
 
 # clustering param setting
-parser.add_argument('--cluster_method', type=str, default='mclust', help="cluster_method")
+parser.add_argument('--cluster_method', type=str, default='mclust', help="Clustering method")
 
 args = parser.parse_args()
 
@@ -70,7 +70,7 @@ if args.platform == '10X':
     adata = sc.read_visium(path=input_dir, count_file=args.slice + '_filtered_feature_bc_matrix.h5')
     adata.var_names_make_unique()
 
-    # extract feature from H&S image
+    # extract feature from H&E image
     use_image = t_or_f(args.use_image)
     if use_image:
         image_feat_path = "./data/{}/{}/image_feature/{}-{}-image_feat.npy".format(args.platform, args.dataset_name,
